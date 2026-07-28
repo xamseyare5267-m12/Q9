@@ -1,0 +1,1 @@
+export const DEFAULT_SOMLUUL_LOGO = "/somluul_official_logo_1784898753277.png";
