@@ -2755,15 +2755,32 @@ Thank you for choosing SomLuul!`;
 
   if (!isProduction) {
     console.log('[FileHub Engine] Starting in DEVELOPMENT mode with Vite Middleware...');
-    import('vite').then(({ createServer }) => {
-      createServer({
-        server: { middlewareMode: true },
+
+    const createViteServer = async (hmrEnabled: boolean) => {
+      const { createServer } = await import('vite');
+      return createServer({
+        server: {
+          middlewareMode: true,
+          hmr: hmrEnabled ? undefined : false,
+        },
         appType: 'spa',
-      }).then(vite => {
-        app.use(vite.middlewares);
-      }).catch(err => {
-        console.error('[FileHub Engine] Failed to load Vite:', err);
       });
+    };
+
+    import('vite').then(async () => {
+      try {
+        const vite = await createViteServer(true);
+        app.use(vite.middlewares);
+      } catch (err) {
+        console.warn('[FileHub Engine] Vite dev middleware failed with HMR enabled:', err);
+        console.warn('[FileHub Engine] Retrying Vite dev middleware with HMR disabled...');
+        try {
+          const vite = await createViteServer(false);
+          app.use(vite.middlewares);
+        } catch (fallbackError) {
+          console.error('[FileHub Engine] Failed to load Vite even with HMR disabled:', fallbackError);
+        }
+      }
     }).catch(err => {
       console.error('[FileHub Engine] Failed to dynamically import Vite:', err);
     });
