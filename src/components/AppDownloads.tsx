@@ -20,6 +20,7 @@ interface PlatformConfig {
   size: string;
   releaseDate: string;
   filename: string;
+  downloadUrl?: string;
   description: string;
   features: string[];
   steps: string[];

@@ -2790,9 +2790,24 @@ Thank you for choosing SomLuul!`;
 
   // Only start listening if we are not on Vercel
   if (!process.env.VERCEL) {
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`[FileHub Engine] Server is running on http://localhost:${PORT}`);
-    });
+    const startListening = (port: number) => {
+      const server = app.listen(port, '0.0.0.0', () => {
+        console.log(`[FileHub Engine] Server is running on http://localhost:${port}`);
+      });
+
+      server.on('error', (error: NodeJS.ErrnoException) => {
+        if (error.code === 'EADDRINUSE') {
+          const nextPort = port + 1;
+          console.warn(`[FileHub Engine] Port ${port} already in use. Trying port ${nextPort}...`);
+          startListening(nextPort);
+        } else {
+          console.error('[FileHub Engine] Server failed to start:', error);
+          process.exit(1);
+        }
+      });
+    };
+
+    startListening(PORT);
   }
 
   return app;
