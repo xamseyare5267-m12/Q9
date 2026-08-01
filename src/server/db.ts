@@ -190,8 +190,59 @@ function initializeDB(): DBStructure {
     }
     return parsed;
   } catch (error) {
-    console.error('Error reading DB, resetting...', error);
-    const emptyData: DBStructure = { profiles: [], files: [], credentials: [], posts: [], activity_logs: [] };
+    console.error('Error reading DB, resetting database file...', error);
+    const emptyData: DBStructure = {
+      profiles: [
+        {
+          id: 'admin-id',
+          email: 'admin@filehub.com',
+          first_name: 'System',
+          last_name: 'Administrator',
+          avatar: null,
+          role: 'admin',
+          blocked: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ],
+      files: [],
+      credentials: [
+        {
+          userId: 'admin-id',
+          passwordHash: Buffer.from('admin123').toString('base64'),
+        },
+      ],
+      posts: [],
+      stories: [],
+      activity_logs: [
+        {
+          id: 'log_init',
+          user_id: 'admin-id',
+          user_email: 'admin@filehub.com',
+          action: 'upload',
+          details: 'System database initialized successfully.',
+          created_at: new Date().toISOString()
+        }
+      ],
+      remote_config: {
+        secretClickTarget: 7,
+        dotClickTarget: 30,
+        editClickTarget: 5,
+        invisibleAreaLocation: 'left-of-logo',
+        dotLocation: 'top-right',
+        appName: 'SomLuul',
+        appLogo: '/somluul_logo.png'
+      },
+      feature_flags: {
+        enableAiModeration: true,
+        enableSpamDetection: true,
+        enableAbuseDetection: true,
+        enableVideoCalls: true,
+        enablePaidSubscriptions: true
+      },
+      notifications: []
+    };
+    fs.writeFileSync(DB_FILE, JSON.stringify(emptyData, null, 2), 'utf-8');
     return emptyData;
   }
 }

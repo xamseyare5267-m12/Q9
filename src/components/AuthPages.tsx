@@ -128,6 +128,7 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ onLoginSuccess, onShowToas
   const [verificationCode, setVerificationCode] = useState('');
   const [inputCode, setInputCode] = useState('');
   const [phone, setPhone] = useState('');
+  const [phoneFullNumber, setPhoneFullNumber] = useState('');
   const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]);
   const [showCountryMenu, setShowCountryMenu] = useState(false);
   const [countrySearch, setCountrySearch] = useState('');
@@ -523,11 +524,14 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ onLoginSuccess, onShowToas
     setError(null);
 
     try {
+      const sanitizedPhone = phone.replace(/[^0-9]/g, '');
+      const fullPhone = `${selectedCountry.code}${sanitizedPhone}`;
       const response = await axios.post('/api/auth/phone/send-otp', {
-        phone,
+        phone: sanitizedPhone,
         country_code: selectedCountry.code
       });
 
+      setPhoneFullNumber(fullPhone);
       onShowToast(response.data.message, 'success');
       if (response.data.otpCode) {
         setPhoneOtpCode(response.data.otpCode);
@@ -554,7 +558,8 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ onLoginSuccess, onShowToas
     setError(null);
 
     try {
-      const fullPhone = `${selectedCountry.code}${phone.replace(/\s+/g, '')}`;
+      const sanitizedPhone = phone.replace(/[^0-9]/g, '');
+      const fullPhone = phoneFullNumber || `${selectedCountry.code}${sanitizedPhone}`;
       const response = await axios.post('/api/auth/phone/verify-otp', {
         phone: fullPhone,
         otpCode: inputCode,
@@ -1263,14 +1268,6 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ onLoginSuccess, onShowToas
             <div className="mx-auto w-14 h-14 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500">
               <Shield size={26} />
             </div>
-            
-            {/* Simulation Helper Banner for preview environments */}
-            {verificationCode && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-600 font-bold flex flex-col gap-1 items-center animate-bounce">
-                <span className="uppercase tracking-widest text-[10px]">Simulated Email Code</span>
-                <span className="text-lg tracking-widest bg-white dark:bg-[#1a2333] px-3 py-1 rounded-lg border border-amber-200">{verificationCode}</span>
-              </div>
-            )}
 
             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
               {t('verify_desc')} <strong className="text-gray-900 dark:text-white">{email}</strong>.
@@ -1442,16 +1439,8 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ onLoginSuccess, onShowToas
               <Smartphone size={26} />
             </div>
 
-            {/* OTP Simulation Banner */}
-            {phoneOtpCode && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-600 font-bold flex flex-col gap-1 items-center animate-bounce">
-                <span className="uppercase tracking-widest text-[10px]">Simulated SMS OTP Code</span>
-                <span className="text-lg tracking-widest bg-white dark:bg-[#1a2333] px-3 py-1 rounded-lg border border-amber-200">{phoneOtpCode}</span>
-              </div>
-            )}
-
             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-              {t('phone_otp_desc')} <strong className="text-gray-900 dark:text-white">{selectedCountry.code} {phone}</strong>.
+              {t('phone_otp_desc')} <strong className="text-gray-900 dark:text-white">{phoneFullNumber || `${selectedCountry.code} ${phone}`}</strong>.
             </p>
 
             <div>
@@ -1546,15 +1535,6 @@ export const AuthPages: React.FC<AuthPagesProps> = ({ onLoginSuccess, onShowToas
         {/* VIEW: RESET PASSWORD WITH RECOVERY CODE */}
         {view === 'reset' && (
           <form onSubmit={handleResetPassword} className="space-y-4">
-            
-            {/* Verification Code Simulation badge */}
-            {verificationCode && (
-              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-600 font-bold flex flex-col gap-1 items-center animate-bounce">
-                <span className="uppercase tracking-widest text-[10px]">Simulated Recovery Code</span>
-                <span className="text-lg tracking-widest bg-white dark:bg-[#1a2333] px-3 py-1 rounded-lg border border-amber-200">{verificationCode}</span>
-              </div>
-            )}
-
             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed mb-2">
               {t('reset_desc')}
             </p>

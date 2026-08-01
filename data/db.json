@@ -1,0 +1,161 @@
+{
+  "profiles": [
+    {
+      "id": "admin-id",
+      "email": "admin@filehub.com",
+      "first_name": "System",
+      "last_name": "Administrator",
+      "avatar": null,
+      "role": "admin",
+      "blocked": false,
+      "created_at": "2026-08-01T04:30:58.328Z",
+      "updated_at": "2026-08-01T04:30:58.331Z"
+    },
+    {
+      "id": "9bqaspqg36mq22e9v6tq",
+      "email": "phone_9bqaspqg36mq22e9v6tq@somluul.com",
+      "first_name": "SomLuul",
+      "last_name": "User",
+      "avatar": null,
+      "role": "normal",
+      "blocked": false,
+      "created_at": "2026-08-01T04:32:14.422Z",
+      "updated_at": "2026-08-01T04:43:34.347Z",
+      "phone": "+252612345678",
+      "phone_verified": true,
+      "login_method": "phone",
+      "devices": [
+        {
+          "id": "v27nv2sz",
+          "name": "Windows PC",
+          "ip": "127.0.0.1",
+          "last_active": "2026-08-01T04:32:29.732Z",
+          "location": "Mogadishu, Somalia"
+        },
+        {
+          "id": "j76309aq",
+          "name": "Windows PC",
+          "ip": "127.0.0.1",
+          "last_active": "2026-08-01T04:42:44.805Z",
+          "location": "Mogadishu, Somalia"
+        },
+        {
+          "id": "az60pm9v",
+          "name": "Windows PC",
+          "ip": "127.0.0.1",
+          "last_active": "2026-08-01T04:42:58.252Z",
+          "location": "Mogadishu, Somalia"
+        },
+        {
+          "id": "ev9frnwr",
+          "name": "Windows PC",
+          "ip": "127.0.0.1",
+          "last_active": "2026-08-01T04:43:34.349Z",
+          "location": "Mogadishu, Somalia"
+        }
+      ],
+      "username": "user_250490",
+      "last_login": "2026-08-01T04:43:34.347Z"
+    }
+  ],
+  "files": [],
+  "credentials": [
+    {
+      "userId": "admin-id",
+      "passwordHash": "YWRtaW4xMjM="
+    },
+    {
+      "userId": "9bqaspqg36mq22e9v6tq",
+      "passwordHash": "$2b$10$cGm5RLuM7.HNjXjDPTvkwe8lUMBx41AQeEtGaF/727/GAS0L6zGdO"
+    }
+  ],
+  "posts": [],
+  "stories": [],
+  "activity_logs": [
+    {
+      "id": "log_init",
+      "user_id": "admin-id",
+      "user_email": "admin@filehub.com",
+      "action": "upload",
+      "details": "System database initialized successfully.",
+      "created_at": "2026-08-01T04:30:58.332Z"
+    }
+  ],
+  "remote_config": {
+    "secretClickTarget": 7,
+    "dotClickTarget": 30,
+    "editClickTarget": 5,
+    "invisibleAreaLocation": "left-of-logo",
+    "dotLocation": "top-right",
+    "appName": "SomLuul",
+    "appLogo": "/somluul_logo.png"
+  },
+  "feature_flags": {
+    "enableAiModeration": true,
+    "enableSpamDetection": true,
+    "enableAbuseDetection": true,
+    "enableVideoCalls": true,
+    "enablePaidSubscriptions": true
+  },
+  "notifications": [
+    {
+      "id": "noti_msg_1785559414403_ibma",
+      "userId": "admin-id",
+      "type": "message",
+      "title": "Farriin Cusub 💬",
+      "body": "Test: Hello from test",
+      "senderId": "9bqaspqg36mq22e9v6tq",
+      "senderName": "Test",
+      "read": false,
+      "created_at": "2026-08-01T04:43:34.403Z"
+    },
+    {
+      "id": "noti_msg_1785558873147_figa",
+      "userId": "admin-id",
+      "type": "message",
+      "title": "Farriin Cusub 💬",
+      "body": "Test User: Hello from test",
+      "senderId": "9bqaspqg36mq22e9v6tq",
+      "senderName": "Test User",
+      "read": false,
+      "created_at": "2026-08-01T04:34:33.147Z"
+    }
+  ],
+  "chatRooms": [
+    {
+      "id": "admin-id",
+      "name": "System Administrator",
+      "avatar": null,
+      "isGroup": false,
+      "unreadCount": 0,
+      "lastMessage": "Hello from test",
+      "lastMessageTime": "07:43",
+      "members": [
+        "9bqaspqg36mq22e9v6tq",
+        "admin-id"
+      ],
+      "bio": "",
+      "phone": ""
+    }
+  ],
+  "chatMessages": [
+    {
+      "id": "m_test_1",
+      "roomId": "admin-id",
+      "senderId": "9bqaspqg36mq22e9v6tq",
+      "senderName": "Test User",
+      "content": "Hello from test",
+      "type": "text",
+      "created_at": "10:00 AM"
+    },
+    {
+      "id": "test_",
+      "senderId": "9bqaspqg36mq22e9v6tq",
+      "roomId": "admin-id",
+      "senderName": "Test",
+      "type": "text",
+      "created_at": "07:43",
+      "content": "Hello from test"
+    }
+  ]
+}

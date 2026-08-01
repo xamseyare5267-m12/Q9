@@ -97,167 +97,10 @@ export const MessengerSection: React.FC<MessengerSectionProps> = ({ user, authTo
     });
   };
   
-  const [rooms, setRooms] = useState<ChatRoom[]>([
-    { 
-      id: 'r_maryan', 
-      name: 'Maryan Mohamed', 
-      avatar: null, 
-      isGroup: false, 
-      unreadCount: 2, 
-      lastMessage: 'Asc walalayaal, sidee tahay?', 
-      lastMessageTime: '09:41 AM', 
-      members: ['r_maryan', 'me'],
-      bio: 'Isku xidhka SomLuul Messenger. Chat. Call. Share. Secure.',
-      phone: '+252 61 2223344',
-      followersCount: 1420,
-      followingCount: 380,
-      isFollowing: true
-    },
-    { 
-      id: 'r_cumar', 
-      name: 'Cumar Abdi', 
-      avatar: null, 
-      isGroup: false, 
-      unreadCount: 0, 
-      lastMessage: 'Waan ku soo gaadhay.', 
-      lastMessageTime: '09:33 AM', 
-      members: ['r_cumar', 'me'],
-      bio: 'Software Engineer @ SomLuul. Cryptography enthusiast & PWA builder.',
-      phone: '+252 61 5112233',
-      followersCount: 840,
-      followingCount: 150,
-      isFollowing: false
-    },
-    { 
-      id: 'r_group', 
-      name: 'SomLuul Group', 
-      avatar: null, 
-      isGroup: true, 
-      unreadCount: 12, 
-      lastMessage: 'Ayaan: Warbixin ku saabsan tignoolajiyada cusub...', 
-      lastMessageTime: '09:20 AM', 
-      members: ['r_maryan', 'r_cumar', 'r_ahmed', 'me'],
-      bio: 'Kooxda guud ee SomLuul. Wixii cusub halkan kala soco.',
-      phone: 'N/A (Group Chat)',
-      followersCount: 12500,
-      followingCount: 0,
-      isFollowing: false
-    },
-    { 
-      id: 'r_ahmed', 
-      name: 'Ahmed Hassan', 
-      avatar: null, 
-      isGroup: false, 
-      unreadCount: 0, 
-      lastMessage: 'Sawirkaas waa fiican yahay 👍', 
-      lastMessageTime: '08:55 AM', 
-      members: ['r_ahmed', 'me'],
-      bio: 'Somali Tech Enthusiast and Open-Source PWA Developer.',
-      phone: '+252 61 5666561',
-      followersCount: 310,
-      followingCount: 220,
-      isFollowing: true
-    },
-    { 
-      id: 'r_channel', 
-      name: 'News Channel 📢', 
-      avatar: null, 
-      isGroup: false, 
-      isChannel: true, 
-      unreadCount: 5, 
-      lastMessage: 'Somaliya oo guul balaadhan ka gaartay...', 
-      lastMessageTime: '08:30 AM', 
-      members: ['me'],
-      bio: 'Kanaalka rasmiga ah ee wararka iyo horumarka dalka SomLuul.',
-      phone: 'N/A (Channel)',
-      followersCount: 45000,
-      followingCount: 0,
-      isFollowing: true
-    },
-    { 
-      id: 'r_fadumo', 
-      name: 'Fadumo Ali', 
-      avatar: null, 
-      isGroup: false, 
-      unreadCount: 0, 
-      lastMessage: 'Voice message 🎤 0:12', 
-      lastMessageTime: '08:22 AM', 
-      members: ['r_fadumo', 'me'],
-      bio: 'Somali UI/UX Designer creating elegant digital experiences.',
-      phone: '+252 61 8889900',
-      followersCount: 950,
-      followingCount: 410,
-      isFollowing: false
-    },
-    { 
-      id: 'r_design', 
-      name: 'Design Team 🎨', 
-      avatar: null, 
-      isGroup: true, 
-      unreadCount: 0, 
-      lastMessage: 'You: Fadlan eeg presentation-ka cusub', 
-      lastMessageTime: 'Yesterday', 
-      members: ['r_fadumo', 'r_cumar', 'me'],
-      bio: 'Kooxda nashqadaynta iyo bilicda rasmiga ah ee SomLuul.',
-      phone: 'N/A (Group)',
-      followersCount: 15,
-      followingCount: 0,
-      isFollowing: false
-    },
-    { 
-      id: 'r_cabdirahman', 
-      name: 'Cabdirahman', 
-      avatar: null, 
-      isGroup: false, 
-      unreadCount: 0, 
-      lastMessage: '📁 File', 
-      lastMessageTime: 'Yesterday', 
-      members: ['r_cabdirahman', 'me'],
-      bio: 'Student at Somali National University studying Artificial Intelligence.',
-      phone: '+252 61 5554433',
-      followersCount: 120,
-      followingCount: 95,
-      isFollowing: false
-    }
-  ]);
+  const [rooms, setRooms] = useState<ChatRoom[]>([]);
 
-  const [activeRoomId, setActiveRoomId] = useState<string>('r_maryan');
-  const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({
-    r_maryan: [
-      { id: 'm_maryan_1', roomId: 'r_maryan', senderId: 'r_maryan', senderName: 'Maryan Mohamed', content: 'Asc walalayaal, sidee tahay?', type: 'text', created_at: '09:41 AM' },
-      { id: 'm_maryan_2', roomId: 'r_maryan', senderId: 'me', senderName: 'Me', content: 'Waa fiicanahay, adiguna?', type: 'text', created_at: '09:42 AM' },
-      { id: 'm_maryan_3', roomId: 'r_maryan', senderId: 'r_maryan', senderName: 'Maryan Mohamed', content: 'Alxamdullilah, waan fiicanahay 😊', type: 'text', created_at: '09:42 AM' },
-      { id: 'm_maryan_4', roomId: 'r_maryan', senderId: 'me', senderName: 'Me', content: 'Maxaa cusub?', type: 'text', created_at: '09:43 AM' },
-      { id: 'm_maryan_5', roomId: 'r_maryan', senderId: 'r_maryan', senderName: 'Maryan Mohamed', content: 'Fariin maqal ah', type: 'voice', created_at: '09:44 AM', mediaUrl: '0:15' },
-      { id: 'm_maryan_6', roomId: 'r_maryan', senderId: 'r_maryan', senderName: 'Maryan Mohamed', content: 'Waxaan joogaa halkan quruxda badan!', type: 'image', created_at: '09:45 AM', mediaUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400' }
-    ],
-    r_cumar: [
-      { id: 'm_cumar_1', roomId: 'r_cumar', senderId: 'r_cumar', senderName: 'Cumar Abdi', content: 'Asc sxb, ma dhamaysay hawshii?', type: 'text', created_at: '09:30 AM' },
-      { id: 'm_cumar_2', roomId: 'r_cumar', senderId: 'me', senderName: 'Me', content: 'Haa, hadda ayaan u soo dirayaa server-ka.', type: 'text', created_at: '09:32 AM' },
-      { id: 'm_cumar_3', roomId: 'r_cumar', senderId: 'r_cumar', senderName: 'Cumar Abdi', content: 'Waan ku soo gaadhay.', type: 'text', created_at: '09:33 AM' }
-    ],
-    r_group: [
-      { id: 'm_group_1', roomId: 'r_group', senderId: 'r_cumar', senderName: 'Cumar Abdi', content: 'Fadlan qof kasta halkan ha dhigo fikradiisa.', type: 'text', created_at: '09:15 AM' },
-      { id: 'm_group_2', roomId: 'r_group', senderId: 'r_maryan', senderName: 'Maryan Mohamed', content: 'Ayaan: Warbixin ku saabsan tignoolajiyada cusub ayaa diyaar ah.', type: 'text', created_at: '09:20 AM' }
-    ],
-    r_ahmed: [
-      { id: 'm_ahmed_1', roomId: 'r_ahmed', senderId: 'me', senderName: 'Me', content: 'Eeg nashqaddan cusub ee SomLuul Messenger.', type: 'text', created_at: '08:50 AM' },
-      { id: 'm_ahmed_2', roomId: 'r_ahmed', senderId: 'r_ahmed', senderName: 'Ahmed Hassan', content: 'Sawirkaas waa fiican yahay 👍', type: 'text', created_at: '08:55 AM' }
-    ],
-    r_channel: [
-      { id: 'm_chan_1', roomId: 'r_channel', senderId: 'system', senderName: 'SomLuul News', content: 'Wararkii u dambeeyay: Somaliya oo guul balaadhan ka gaartay dhanka tignoolajiyada isgaarsiinta.', type: 'text', created_at: '08:30 AM' }
-    ],
-    r_fadumo: [
-      { id: 'm_fadumo_1', roomId: 'r_fadumo', senderId: 'r_fadumo', senderName: 'Fadumo Ali', content: 'Fadlan eeg farriintan codka ah.', type: 'voice', created_at: '08:22 AM', mediaUrl: '0:12' }
-    ],
-    r_design: [
-      { id: 'm_des_1', roomId: 'r_design', senderId: 'r_fadumo', senderName: 'Fadumo Ali', content: 'Figma link-gii waa kan diyaar sxb.', type: 'text', created_at: 'Yesterday' },
-      { id: 'm_des_2', roomId: 'r_design', senderId: 'me', senderName: 'Me', content: 'Fadlan eeg presentation-ka cusub', type: 'text', created_at: 'Yesterday' }
-    ],
-    r_cabdirahman: [
-      { id: 'm_cab_1', roomId: 'r_cabdirahman', senderId: 'r_cabdirahman', senderName: 'Cabdirahman', content: 'Halkan ayaan kuugu soo lifaqay buugga.', type: 'file', created_at: 'Yesterday', mediaUrl: 'AI_Handbook.pdf' }
-    ]
-  });
+  const [activeRoomId, setActiveRoomId] = useState<string>('');
+  const [messages, setMessages] = useState<Record<string, ChatMessage[]>>({});
 
   const [inputText, setInputText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -481,6 +324,9 @@ export const MessengerSection: React.FC<MessengerSectionProps> = ({ user, authTo
               merged.push(srvRoom);
             }
           });
+          if (!activeRoomId && merged.length > 0) {
+            setActiveRoomId(merged[0].id);
+          }
           return merged;
         });
       }
@@ -516,6 +362,12 @@ export const MessengerSection: React.FC<MessengerSectionProps> = ({ user, authTo
     return () => clearInterval(syncInterval);
   }, [authToken]);
 
+  useEffect(() => {
+    if (!activeRoomId && rooms.length > 0) {
+      setActiveRoomId(rooms[0].id);
+    }
+  }, [rooms, activeRoomId]);
+
   const processTargetProfile = (targetProfile: any) => {
     if (!targetProfile || !targetProfile.id) return;
     const nameStr = targetProfile.first_name ? `${targetProfile.first_name} ${targetProfile.last_name || ''}`.trim() : (targetProfile.name || 'User');
@@ -527,7 +379,7 @@ export const MessengerSection: React.FC<MessengerSectionProps> = ({ user, authTo
       unreadCount: 0,
       lastMessage: language === 'so' ? 'Ku bilow hadal badbaado leh!' : 'Start a secure chat!',
       lastMessageTime: 'Just now',
-      members: [targetProfile.id, 'me'],
+      members: [user.id, targetProfile.id],
       bio: targetProfile.bio || '',
       phone: targetProfile.phone || ''
     };

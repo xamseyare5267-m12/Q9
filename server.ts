@@ -114,6 +114,40 @@ async function sendVerificationEmail(email: string, code: string): Promise<boole
   }
 }
 
+async function sendSmsMessage(to: string, body: string): Promise<boolean> {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const from = process.env.TWILIO_PHONE_FROM;
+
+  if (!accountSid || !authToken || !from) {
+    console.warn('[SMS] Twilio configuration is missing. SMS not sent.');
+    return false;
+  }
+
+  try {
+    const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+    const payload = new URLSearchParams({
+      From: from,
+      To: to,
+      Body: body
+    });
+    await axios.post(url, payload.toString(), {
+      auth: {
+        username: accountSid,
+        password: authToken
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    });
+    console.log(`[SMS] OTP sent successfully to: ${to}`);
+    return true;
+  } catch (error) {
+    console.error(`[SMS] Failed to send OTP to: ${to}`, error?.response?.data || error);
+    return false;
+  }
+}
+
 // Sync db.json from GCS
 async function syncDbFromGcs() {
   const gcsBucketName = process.env.GCS_BUCKET_NAME;
@@ -478,7 +512,7 @@ function startServer() {
 
   // --- 1. EMAIL SIGN UP / LOGIN ENDPOINTS ---
 
-  app.post('/api/auth/signup', (req, res) => {
+  app.post('/api/auth/signup', async (req, res) => {
     const { email, password, first_name, last_name, username, bio, dob, role, email_verified, phone, gender, deviceId } = req.body;
     if (!email || !password || !first_name || !last_name) {
       res.status(400).json({ error: 'Fadlan buuxi dhammaan xogta muhiimka ah (Email, Password, Name).' });
@@ -520,7 +554,7 @@ function startServer() {
       dob: dob || '',
       phone: phone || '',
       gender: gender || '',
-      email_verified: true, // Auto verify to prevent mail blocking
+      email_verified: false,
       verification_code: verificationCode,
       login_method: 'email',
       created_at: new Date().toISOString()
@@ -531,22 +565,15 @@ function startServer() {
       return;
     }
 
-    // Automatically create a device session and log the user in immediately
-    const sessionDetail = registerDeviceSession(result.user.id, req, deviceId);
-    const dbRefreshed = readDB();
-    const registeredUser = dbRefreshed.profiles.find(p => p.id === result.user!.id)!;
-
-    // Send real verification email in background as a luxury extra
-    sendVerificationEmail(normalizedEmail, verificationCode);
+    // Send the verification email to the user
+    const emailSent = await sendVerificationEmail(normalizedEmail, verificationCode);
 
     res.status(201).json({
-      message: 'Akoonkaaga waa la sameeyay si guul leh!',
-      verificationCode: verificationCode,
-      session: {
-        user: registeredUser,
-        token: sessionDetail.token,
-        deviceId: sessionDetail.id
-      }
+      message: emailSent
+        ? 'Akoonkaaga waa la sameeyay. Koodhka xaqiijinta ayaa loo diray email-kaaga.'
+        : 'Akoonkaaga waa la sameeyay laakiin emailka xaqiijinta lama dirin sababtoo ah SMTP lama habeynin.',
+      verificationCode,
+      emailSent
     });
   });
 
@@ -705,18 +732,25 @@ function startServer() {
 
   // --- 2. PHONE NUMBER AUTHENTICATION ---
 
-  app.post('/api/auth/phone/send-otp', (req, res) => {
+  const normalizePhoneNumber = (value: string) => {
+    if (!value) return '';
+    return value.replace(/[^0-9]/g, '').replace(/^0+/, '').replace(/^252/, (match) => match).trim();
+  };
+
+  app.post('/api/auth/phone/send-otp', async (req, res) => {
     const { phone, country_code } = req.body;
     if (!phone) {
       res.status(400).json({ error: 'Fadlan geli lambarkaaga telefoonka.' });
       return;
     }
 
-    const fullPhone = `${country_code || '+252'}${phone.replace(/\s+/g, '')}`;
+    const countryCode = String(country_code || '+252').replace(/[^0-9+]/g, '');
+    const fullPhone = `${countryCode}${phone.replace(/\s+/g, '')}`;
+    const normalizedPhone = normalizePhoneNumber(fullPhone);
     const db = readDB();
     
     // Find or create profile with this phone number
-    let user = db.profiles.find(p => p.phone === fullPhone);
+    let user = db.profiles.find(p => normalizePhoneNumber(p.phone || '') === normalizedPhone);
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     if (!user) {
@@ -752,10 +786,17 @@ function startServer() {
 
     writeDB(db);
 
+    // Attempt to send the OTP via SMS when Twilio config is available.
+    const smsBody = `SomLuul OTP code: ${otpCode}. Fadlan ha wadaagin koodhkan.`;
+    const smsSent = await sendSmsMessage(fullPhone, smsBody);
+
     res.json({
-      message: `SMS xaqiijin ah ayaa loo diray telefoonka ${fullPhone}.`,
+      message: smsSent
+        ? `SMS xaqiijin ah ayaa loo diray telefoonka ${fullPhone}.`
+        : `OTP code ayaa la diyaariyey laakiin SMS lama dirin; diyaar u noqo inaad isticmaasho koodhka ka muuqda shaashadda.`,
       otpCode, // return directly for simulation in the preview screen!
-      phone: fullPhone
+      phone: fullPhone,
+      smsSent
     });
   });
 
@@ -766,8 +807,14 @@ function startServer() {
       return;
     }
 
+    const normalizePhoneNumber = (value: string) => {
+      if (!value) return '';
+      return value.replace(/[^0-9]/g, '').replace(/^0+/, '').trim();
+    };
+
+    const normalizedPhone = normalizePhoneNumber(phone);
     const db = readDB();
-    const userIndex = db.profiles.findIndex(p => p.phone === phone);
+    const userIndex = db.profiles.findIndex(p => normalizePhoneNumber(p.phone || '') === normalizedPhone);
 
     if (userIndex === -1) {
       res.status(404).json({ error: 'Lambarkan telefoon ma diiwaan gashna.' });
