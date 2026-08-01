@@ -2761,7 +2761,13 @@ Thank you for choosing SomLuul!`;
       return createServer({
         server: {
           middlewareMode: true,
-          hmr: hmrEnabled ? undefined : false,
+          hmr: hmrEnabled
+            ? {
+                protocol: 'ws',
+                host: 'localhost',
+                port: 0,
+              }
+            : false,
         },
         appType: 'spa',
       });
@@ -2785,24 +2791,28 @@ Thank you for choosing SomLuul!`;
       console.error('[FileHub Engine] Failed to dynamically import Vite:', err);
     });
   } else {
-    console.log('[FileHub Engine] Starting in PRODUCTION mode with static file serving...');
-    
-    // Resolve distPath relative to process.cwd() or __dirname (where server.cjs is located in production)
-    let distPath = path.join(process.cwd(), 'dist');
-    if (!fs.existsSync(path.join(distPath, 'index.html')) && fs.existsSync(path.join(__dirname, 'index.html'))) {
-      distPath = __dirname;
-    }
-    
-    console.log(`[FileHub Engine] Serving static files from: ${distPath}`);
-    app.use(express.static(distPath));
-    
-    // For React SPA fallback routing
-    app.get('*', (req, res) => {
-      if (req.path.startsWith('/api/')) {
-        return res.status(404).json({ error: 'API route not found' });
+    if (process.env.VERCEL) {
+      console.log('[FileHub Engine] Running in Vercel serverless mode. Static assets are served separately by Vercel.');
+    } else {
+      console.log('[FileHub Engine] Starting in PRODUCTION mode with static file serving...');
+      
+      // Resolve distPath relative to process.cwd() or __dirname (where server.cjs is located in production)
+      let distPath = path.join(process.cwd(), 'dist');
+      if (!fs.existsSync(path.join(distPath, 'index.html')) && fs.existsSync(path.join(__dirname, 'index.html'))) {
+        distPath = __dirname;
       }
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
+      
+      console.log(`[FileHub Engine] Serving static files from: ${distPath}`);
+      app.use(express.static(distPath));
+      
+      // For React SPA fallback routing
+      app.get('*', (req, res) => {
+        if (req.path.startsWith('/api/')) {
+          return res.status(404).json({ error: 'API route not found' });
+        }
+        res.sendFile(path.join(distPath, 'index.html'));
+      });
+    }
   }
 
   // Only start listening if we are not on Vercel

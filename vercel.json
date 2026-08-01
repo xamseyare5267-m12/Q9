@@ -22,8 +22,9 @@
       "src": "/uploads/(.*)",
       "dest": "/api/index.ts"
     },
-    {
-      "src": "/(.*)",
+    {      "handle": "filesystem"
+    },
+    {      "src": "/(.*)",
       "dest": "/index.html"
     }
   ]
